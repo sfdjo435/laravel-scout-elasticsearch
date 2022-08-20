@@ -53,7 +53,8 @@ final class EloquentHitsIteratorAggregate implements IteratorAggregate
                     // replace class App\ to App\Model
                     // if class does not contain Model,
                     // then use the class name as is
-                    $class = class_exists(str_replace('App\\', 'App\\Models\\', $class)) ?? $class;
+                    $possible_class = str_replace('App\\', 'App\\Models\\', $class);
+                    $class = class_exists($possible_class) ? $possible_class : $class;
                     $model = new $class;
                     $model->setKeyType('string');
                     $builder = new Builder($model, '');
