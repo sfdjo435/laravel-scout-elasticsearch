@@ -23,10 +23,10 @@ final class EloquentHitsIteratorAggregate implements IteratorAggregate
     private $callback;
 
     /**
-     * @param  array|Elasticsearch  $results
+     * @param  $results
      * @param  callable|null  $callback
      */
-    public function __construct(array|Elasticsearch $results, callable $callback = null)
+    public function __construct($results, callable $callback = null)
     {
         $this->results = $results;
         $this->callback = $callback;
@@ -50,6 +50,10 @@ final class EloquentHitsIteratorAggregate implements IteratorAggregate
             $models = collect($hits)->groupBy('_source.__class_name')
                 ->map(function ($results, $class) {
                     /** @var Searchable $model */
+                    // replace class App\ to App\Model
+                    // if class does not contain Model,
+                    // then use the class name as is
+                    $class = class_exists(str_replace('App\\', 'App\\Models\\', $class)) ?? $class;
                     $model = new $class;
                     $model->setKeyType('string');
                     $builder = new Builder($model, '');
