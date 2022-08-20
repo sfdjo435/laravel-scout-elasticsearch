@@ -50,11 +50,6 @@ final class EloquentHitsIteratorAggregate implements IteratorAggregate
             $models = collect($hits)->groupBy('_source.__class_name')
                 ->map(function ($results, $class) {
                     /** @var Searchable $model */
-                    // replace class App\ to App\Model
-                    // if class does not contain Model,
-                    // then use the class name as is
-                    $possible_class = str_replace('App\\', 'App\\Models\\', $class);
-                    $class = class_exists($possible_class) ? $possible_class : $class;
                     $model = new $class;
                     $model->setKeyType('string');
                     $builder = new Builder($model, '');
